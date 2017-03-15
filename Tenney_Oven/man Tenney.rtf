@@ -1,0 +1,60 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1344\cocoasubrtf720
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red0\green77\blue187;}
+\vieww33400\viewh18100\viewkind0
+\deftab720
+\pard\pardeftab720\sl276\slmult1\sa200\qc
+
+\f0\fs40 \cf0 OU Thermal Chamber 'Tenney' class Manual
+\fs22 \
+Dylan Frizzell\
+6/1/16\
+\pard\pardeftab720\ri-180\sl276\slmult1\sa200\qc
+
+\fs36 \cf0 This manual will outline the usage of the MATLAB class 'Tenney' that I have created to operate and run the Tenney thermal chamber  located at OU. The chamber is connected to a computer via serial link. The class 'Tenney' has a dependency on a class 'Arduino' that I have written that will read a serial connection from an arduino that is sending temperature readouts from a thermistor. Although this class 'Tenney' has prebuilt functions for running temperature profiles; some settings such as temperature limits, alarms, hysteresis, communication protocols, and 
+\i triggers
+\i0  should be set manualy with the watlow interface (see manual).\
+\pard\pardeftab720\ri-180\sl276\slmult1\sa200
+\cf0 CLASS OBJECT VARIABLES\
+	
+\i Temperature_Acceptance
+\i0  (default=3)- The tolerance for which the program will accept a setpoint or increment level has been 'successfully' reached. For example a setpoint or step set at 5 degrees will be reached successfully at any temperature from 2-8 degrees. \
+	
+\i chamber
+\i0 - This controls the serial communication with the Tenney chamber. Don't mess with this. \
+	
+\i ard
+\i0 - This controls the serial communication with the Arduino serial connections. See 
+\i chamber
+\i0 . \
+	
+\i data-
+\i0  This is a 1xN array that will contain the temperature data logging. N is the number of samplings.\
+	
+\i time-
+\i0 This is a 1xN array that will contain the elapsed time data logging. N is the number of samplings.\
+		\
+CLASS METHODS:\
+Tenney(\cf2 string \cf0 com, \cf2 string \cf0 ardport)\
+	This method is a constructor method for declaring a tenney object. The first argument is the usb port associated with the tenney serial connection, the second is the usb port associated with the arduino required for activation. EXAMPLE:  run = Tenney('COM4','COM5');\
+close()\
+	Closes both serial connections.\
+setPoint(\cf2 double \cf0 setpoint)\
+	Instantaneously sets the setpoint temperature on the thermal chamber to the argument value. See chamber manual for more on setpoints.\
+\cf2 double \cf0 readTemp()\
+	Returns the temperature of the air being circulated in the tenney as measured by the chamber. \
+stepUp(\cf2 double \cf0 start,\cf2 double \cf0 stop,\cf2 int \cf0 N,\cf2 double \cf0 T)\
+	Begins a increasing incremental temperature profile starting from 'start' ending at 'stop' that is divided into 'N' discrete steps, and waiting for 'T' minutes at each step. Provides data logging.\
+stepDown(\cf2 double \cf0 start,\cf2 double \cf0 stop,\cf2 int \cf0 N,\cf2 double \cf0 T)\
+	Begins a decreasing incremental temperature profile starting from 'start' ending at 'stop' that is divided into 'N' discrete steps, and waiting for 'T' minutes at each step. Provides data logging.\
+\cf2 double \cf0 readArduino()\
+	Returns a the temperature recieved from the arduino/thermal ntc. \
+soak(\cf2 double \cf0 time)\
+	Maintains the current temperature for 'time' seconds. Provides data logging. \
+cycle(\cf2 double \cf0 min,\cf2 double \cf0 max,\cf2 int \cf0 num_steps,\cf2 double \cf0 soaktime,\cf2 int \cf0 cycles)\
+	Performs a cycling of incrementing up from 'min' to 'max' with 'num_steps' number of discrete steps in between waiting 'soaktime' minutes at each increment. The up and down cycling is repeated 'cycles' number of times. \
+\cf2 double \cf0 getData()\
+	Returns the temperature data that has been logged after a run(s).\
+\cf2 double \cf0 getTimeData()\
+	Returns the elapsed time data that has been logged after a run(s).\
+}
