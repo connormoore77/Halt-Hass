@@ -6,19 +6,13 @@ import time
 import threading,Queue
 import logging
 import datetime
-#import serial 
-#import Reading
-#import decimal
-#import matplotlib.pyplot as plt
-#import smtplib
-#import minimalmodbus
 import tenney
 import vibration
-#from tenney import *
-#from vibration import *
+#import Writing
 
 #Notes
-#Add kill button
+#Add kill button and stop button
+#add additional fields for cycle functions
 #add vacuum chuck status
 #add threaded moduals, changeFreq, changePressure, changeTemp, setGrms
 #Add plotting 
@@ -220,6 +214,8 @@ class HALTHASS(Tkinter.Tk):
         self.labelFrequency.set("Current frequency: " + self.enterFrequency.get() + " Hz")
         self.entryF.focus_set()
         self.entryF.selection_range(0, Tkinter.END)
+        vib = vibration.VibrationCycling('COM4','COM5')
+        vib.changeFreq(int(self.enterFrequency.get()))
 
     #def OnPressEnter(self,event):
      #   self.labelVariable.set( self.entryVariable.get())#+" (You pressed ENTER)" )
@@ -231,12 +227,16 @@ class HALTHASS(Tkinter.Tk):
         self.labelPressure.set("Current Pressure: " + self.enterPressure.get() + " Psi")
         self.entryP.focus_set()
         self.entryP.selection_range(0, Tkinter.END)
+        vib = vibration.VibrationCycling('COM4','COM5')
+        vib.setPressure(int(self.enterPressure.get()))
 
     #Update temperature button definition        
     def OnButtonClickTemperature(self):
         self.labelTemperature.set("Current Temperature: " + self.enterTemperature.get() + " C")
         self.entryT.focus_set()
         self.entryT.selection_range(0, Tkinter.END)
+        oven = tenney.Tenney('COM7','COM3')
+        oven.setPoint(self.enterTemperature.get())
 
     #Update grms button definition        
     def OnButtonClickGrms(self):
@@ -290,19 +290,28 @@ class HALTHASS(Tkinter.Tk):
         self.radioManual.config(state='disable')
         self.buttonStopCycle.config(state='normal')
         self.buttonStartCycle.config(state='disable')
+        vib = vibration.VibrationCycling('COM4','COM5')
+        oven = tenney.Tenney('COM7','COM3')
+        thread1 = threading.Thread(target=vib.cycle, args=[1,10,1,5,2])
+        thread2 = threading.Thread(target=oven.cycle, args=[40,20,5,10,2])
+        #os.system('Writing.py')
+        thread1.start()
+        thread2.start()
 
-    #Start cycle button definition        
-    def OnButtonClickStopCycle(self):
-        self.entryF.config(state='normal')
-        self.entryNC.config(state='normal')
-        self.entryLT.config(state='normal')
-        self.entryHT.config(state='normal')
-        self.entryS.config(state='normal')
-        self.entryST.config(state='normal')
-        self.radioCycle.config(state='normal')
-        self.radioManual.config(state='normal')
-        self.buttonStartCycle.config(state='normal')
-        self.buttonStopCycle.config(state='disable')                        
+    #Stop cycle button definition        
+    #def OnButtonClickStopCycle(self):
+     #   self.entryF.config(state='normal')
+     #   self.entryNC.config(state='normal')
+     #   self.entryLT.config(state='normal')
+     #   self.entryHT.config(state='normal')
+     #   self.entryS.config(state='normal')
+     #   self.entryST.config(state='normal')
+     #   self.radioCycle.config(state='normal')
+     #   self.radioManual.config(state='normal')
+     #   self.buttonStartCycle.config(state='normal')
+     #   self.buttonStopCycle.config(state='disable')     
+     #   thread1.stop()
+     #   thread2.stop()                   
                                                 
                                                                                                 
 ########################main####################################################
