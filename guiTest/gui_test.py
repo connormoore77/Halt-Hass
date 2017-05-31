@@ -323,7 +323,7 @@ class HALTHASS(Tkinter.Tk):
         self.entryT.focus_set()
         self.entryT.selection_range(0, Tkinter.END)
         oven = tenney.Tenney('COM7','COM3')
-        oven.setPoint(self.enterTemperature.get())
+        oven.setPoint(float(self.enterTemperature.get()))
 
     #Update grms button definition        
     def OnButtonClickGrms(self):
@@ -386,12 +386,12 @@ class HALTHASS(Tkinter.Tk):
         self.radioManual.config(state='disable')
         self.buttonStopCycle.config(state='normal')
         self.buttonStartCycle.config(state='disable')
-        vib = vibration.VibrationCycling('COM4','COM5')
+        #vib = vibration.VibrationCycling('COM4','COM5')
         oven = tenney.Tenney('COM7','COM3')
-        thread1 = threading.Thread(target=vib.cycle, args=[self.enterVibStepSize,self.enterVibStartGrms,self.enterVibStepLength,self.enterVibNumberOfSteps,self.enterVibFrequency])
-        thread2 = threading.Thread(target=oven.cycle, args=[self.enterHighTemp,self.enterLowTemp,self.enterSteps,self.enterSetTime,self.enterNumCycles])
+        #thread1 = threading.Thread(target=vib.cycle, args=[self.enterVibStepSize,self.enterVibStartGrms,self.enterVibStepLength,self.enterVibNumberOfSteps,self.enterVibFrequency])
+        thread2 = threading.Thread(target=oven.cycle, args=[float(self.enterHighTemp.get()),float(self.enterLowTemp.get()),int(self.enterSteps.get()),int(self.enterSetTime.get()),int(self.enterNumCycles.get())])
         #thread3 = threading.Thread(target=os.system('python Writing.py'))
-        thread1.start()
+        #thread1.start()
         thread2.start()
         #thread3.start()
 
