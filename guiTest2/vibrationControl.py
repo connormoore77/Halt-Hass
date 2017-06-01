@@ -15,13 +15,13 @@ class Cylinders(object):
             return                
 
         deltaT = 500/frequency
-        print deltaT
         time.sleep(1)
         self.arduino.flush()
         self.arduino.write(str(deltaT))
+        print 'Frequency Set.'
         
-        def close(self):
-            self.arduino.close()
+    def close(self):
+        self.arduino.close()
 
 
 class PropAir(object):
@@ -57,7 +57,7 @@ class PropAir(object):
         return val
                 
                         
-class VibrationCycling(PropAir, Cylinders):
+class vibrationCycling(PropAir, Cylinders):
     def __init__(self, PAport, Cport, grmsPort='none'):
         PropAir.__init__(self, PAport, grmsArduinoPort=grmsPort)
         Cylinders.__init__(self, Cport)
@@ -117,31 +117,38 @@ class VibrationCycling(PropAir, Cylinders):
         self.setPressure(1)#have the pressure start low
         grmsAcceptance = .2        
         timeToWait = timeToWaitInPlace*60 #convert to minutes
-        temperatureAcceptance = 5
-        stopTemperature = startTemperature + stepSize*numberOfSteps
+        stopGrms = startGrms + stepSize*numberOfSteps
         
         #begin vibration cycling cycling
-        for cycle in range(1,numberOfCycles+1):            
-            for step in range(0, numberOfSteps):
-                setGrms = startGrms + step*stepSize
-                print 'Adjusting Grms to ' + str(setGrms)
-                self.setGrms(setGrms)
-                time.sleep(1)
-                currentGrms = read.readGrms(grmsLog)               
-                while (abs(currentGrms - setGrms) > grmsAcceptance):                    
-                    print 'Current grms is ' + currentGrms +'. Adjusting Setpoint to ' + str(setTemperature)
+        for cycle in range(1,numberOfCycles+1):
+            directionUp = True            
+            for i in range(1,3):              
+                for step in range(0, numberOfSteps+1):
+                    if(directionUp):
+                        #print'Stepping up Grms'
+                        setGrms = startGrms + step*stepSize
+                    else:
+                        #print 'Stepping down Grms'
+                        setGrms = stopGrms - step*stepSize
+                    print 'Adjusting Grms to ' + str(setGrms)
                     self.setGrms(setGrms)
-                    currentTemperature = self.arduino.readTemperature()               
                     time.sleep(1)
-                print 'Set Grms Reached'
-                timeToEnd = time.time() + timeToWait
-                #Keep grms at certain level
-                while time.time() < timeToEnd:
-                    currentGrms = read.readGrms(grmsLog)
-                    print 'Current grms is ' + currentGrms + '.' 
-                    if(abs(currentGrms - setGrms) > grmsAcceptance):#keep calling to maintian grms
+                    currentGrms = read.readGrms(grmsLog)               
+                    while (abs(currentGrms - setGrms) > grmsAcceptance):                    
+                        print 'Current grms is ' + currentGrms +'. Adjusting Setpoint to ' + str(setTemperature)
                         self.setGrms(setGrms)
-                    time.sleep(1)                               
+                        currentTemperature = self.arduino.readTemperature()               
+                        time.sleep(1)
+                    print 'Set Grms Reached'
+                    timeToEnd = time.time() + timeToWait
+                    #Keep grms at certain level
+                    while time.time() < timeToEnd:
+                        currentGrms = read.readGrms(grmsLog)
+                        print 'Current grms is ' + currentGrms + '.' 
+                        if(abs(currentGrms - setGrms) > grmsAcceptance):#keep calling to maintian grms
+                            self.setGrms(setGrms)
+                        time.sleep(1)  
+                directionUp = False                             
             print 'Cycle ' + str(i) + ' of ' + str(cycle) + ' is complete.'
         print 'Finished vibration cycling. Setting Pressure 0 Psi.'
         self.setPressure(0)

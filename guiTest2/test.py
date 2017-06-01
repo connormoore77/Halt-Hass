@@ -13,18 +13,18 @@ import os
 
 #Notes
 #Add kill button and stop button
-#add additional fields for cycle functions
+#add a way to exit loops
 #add vacuum chuck status
 #add threaded moduals, changeFreq, changePressure, changeTemp, setGrms
+#add updating fields to gui
 #Add plotting 
 #Save data and plots
 #add checks to see if entered a value or entered the right type of value
-#add a way to exit loops
-#add updating fields to gui
+#fix entry fileds and buttons to reflect current inputs to cycling functions
+
 
 logging.basicConfig(level=logging.DEBUG,
-                    format='(%(threadName)-10s) %(message)s',
-                    )
+                    format='(%(threadName)-10s) %(message)s',)
 
 class HALTHASS(Tkinter.Tk):
     def __init__(self,parent):
@@ -301,8 +301,8 @@ class HALTHASS(Tkinter.Tk):
         self.labelFrequency.set("Current frequency: " + self.enterFrequency.get() + " Hz")
         self.entryF.focus_set()
         self.entryF.selection_range(0, Tkinter.END)
-        vib = vibration.VibrationCycling('COM4','COM5')
-        vib.setFreq(int(self.enterFrequency.get()))
+        vib = vibrationControl.vibrationCycling('COM4','COM5')
+        vib.setFrequency(int(self.enterFrequency.get()))
 
     #def OnPressEnter(self,event):
      #   self.labelVariable.set( self.entryVariable.get())#+" (You pressed ENTER)" )
@@ -314,7 +314,7 @@ class HALTHASS(Tkinter.Tk):
         self.labelPressure.set("Current Pressure: " + self.enterPressure.get() + " Psi")
         self.entryP.focus_set()
         self.entryP.selection_range(0, Tkinter.END)
-        vib = vibration.VibrationCycling('COM4','COM5')
+        vib = vibrationControl.vibrationCycling('COM4','COM5')
         vib.setPressure(int(self.enterPressure.get()))
 
     #Update temperature button definition        
@@ -322,7 +322,7 @@ class HALTHASS(Tkinter.Tk):
         self.labelTemperature.set("Current Temperature: " + self.enterTemperature.get() + " C")
         self.entryT.focus_set()
         self.entryT.selection_range(0, Tkinter.END)
-        oven = tenney.Tenney('COM7','COM3')
+        oven = thermalControl.tenney('COM7','COM3')
         oven.setTemperature(float(self.enterTemperature.get()))
 
     #Update grms button definition        
@@ -387,9 +387,11 @@ class HALTHASS(Tkinter.Tk):
         self.buttonStopCycle.config(state='normal')
         self.buttonStartCycle.config(state='disable')
         #vib = vibrationControl.vibrationCycling('COM4','COM5')
-        oven = thermalControl.thermalCycling('COM7','COM3')
-        #thread1 = threading.Thread(target=vib.cycle, args=[self.enterVibStepSize,self.enterVibStartGrms,self.enterVibStepLength,self.enterVibNumberOfSteps,self.enterVibFrequency])
-        thread2 = threading.Thread(target=oven.cycle, args=[float(self.enterHighTemp.get()),float(self.enterLowTemp.get()),int(self.enterSteps.get()),int(self.enterSetTime.get()),int(self.enterNumCycles.get())])
+        oven = thermalControl.tenney('COM7','COM3')
+        #thread1 = threading.Thread(target=vib.vibrationCycling, args=[self.enterVibStepSize,self.enterVibStartGrms,self.enterVibStepLength,self.enterVibNumberOfSteps,self.enterVibFrequency])
+        #thread1 = threading.Thread(target=vib.vibrationCycling, args=[5,3,2,1,2,5])
+        #thread2 = threading.Thread(target=oven.cycle, args=[float(self.enterHighTemp.get()),float(self.enterLowTemp.get()),int(self.enterSteps.get()),int(self.enterSetTime.get()),int(self.enterNumCycles.get())])
+        thread2 = threading.Thread(target=oven.thermalCycling, args=[40,3,2,1,2])
         #thread3 = threading.Thread(target=os.system('python Writing.py'))
         #thread1.start()
         thread2.start()
