@@ -88,3 +88,4 @@ class Arduino(object):
          print self.readNTC()
          
          print self.readNTC()
+         

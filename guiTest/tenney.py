@@ -29,7 +29,7 @@ class Tenney(object):
         s.ehlo()
         
         try:
-            s.sendmail('tenney_chamber@outlook.com',['dylan.frizzell@ou.edu','abbott@ou.edu','john.stupak@ou.edu'],"Thermal Chamber Error REAL")
+            s.sendmail('tenney_chamber@outlook.com',['dylan.frizzell@ou.edu','Trenton.A.Voth-1@ou.edu','abbott@ou.edu','john.stupak@ou.edu'],"Thermal Chamber Error REAL")
             print "email send success"
         except:
             print "email send failure"
@@ -252,3 +252,9 @@ class Tenney(object):
             print 'cycle ' + str(i) + ' of ' + str(cycles) + ' is complete'
             print ' done'
             self.setPoint(25)
+        
+        
+            
+            
+        
+    
