@@ -377,15 +377,6 @@ class HALTHASS(Tkinter.Tk):
 
     #Start cycle button definition        
     def OnButtonClickStartCycle(self):        
-        self.entryNC.config(state='disable')
-        self.entryLT.config(state='disable')
-        self.entryHT.config(state='disable')
-        self.entryS.config(state='disable')
-        self.entryST.config(state='disable')
-        self.radioCycle.config(state='disable')
-        self.radioManual.config(state='disable')
-        self.buttonStopCycle.config(state='normal')
-        self.buttonStartCycle.config(state='disable')
         #vib = vibrationControl.vibrationCycling('COM4','COM5')
         oven = thermalControl.tenney('COM7','COM3')
         #thread1 = threading.Thread(target=vib.vibrationCycling, args=[self.enterVibStepSize,self.enterVibStartGrms,self.enterVibStepLength,self.enterVibNumberOfSteps,self.enterVibFrequency])
