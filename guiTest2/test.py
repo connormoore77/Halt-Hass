@@ -9,6 +9,8 @@ import datetime
 import thermalControl 
 import vibrationControl
 import os
+from sys import executable
+from subprocess import Popen, CREATE_NEW_CONSOLE
 
 
 #Notes
@@ -273,7 +275,7 @@ class HALTHASS(Tkinter.Tk):
         self.buttonStartCycle.grid(column=0,row=26)
         
         #Stop cycle 
-        self.buttonStopCycle = Tkinter.Button(self,text=u"Stop Cycle",command=self.OnButtonClickStopCycle, state='disable')
+        self.buttonStopCycle = Tkinter.Button(self,text=u"Kill All",command=self.OnButtonClickStopCycle, state='disable')
         self.buttonStopCycle.grid(column=1,row=26)
 
     
@@ -368,17 +370,19 @@ class HALTHASS(Tkinter.Tk):
         #thread1 = threading.Thread(target=vib.vibrationCycling, args=[self.enterVibStepSize,self.enterVibStartGrms,self.enterVibStepLength,self.enterVibNumberOfSteps,self.enterVibFrequency])
         #thread1 = threading.Thread(target=vib.vibrationCycling, args=[5,3,2,1,2,5])
         #thread2 = threading.Thread(target=oven.cycle, args=[float(self.enterHighTemp.get()),float(self.enterLowTemp.get()),int(self.enterSteps.get()),int(self.enterSetTime.get()),int(self.enterNumCycles.get())])
-        thread2 = threading.Thread(target=oven.thermalCycling, args=[40,3,2,1,2])
+        #thread2 = threading.Thread(target=oven.thermalCycling, args=[40,3,2,1,2])
         oven = thermalControl.thermalCycling('COM7','COM3')
         #thread1 = threading.Thread(target=vib.grmsCycling, args=[int(self.enterVibStartGrms.get()),int(self.enterVibNumberOfSteps.get()),int(self.enterVibStepSize.get()),int(self.enterVibStepLength.get()),int(self.enterVibNumberOfCycles.get()),int(self.enterVibFrequency.get())])
         thread2 = threading.Thread(target=oven.cycle, args=[float(self.enterStartTemperature.get()),float(self.enterSteps.get()),int(self.enterThermStepSize.get()),int(self.enterSetTime.get()),int(self.enterNumCycles.get())])
         #thread3 = threading.Thread(target=os.system('python Writing.py'))
         #thread1.start()
+        Popen([executable, 'Writing.py'], creationflags=CREATE_NEW_CONSOLE)
         thread2.start()
-        #thread3.start()
+        
 
     #Stop cycle button definition        
     def OnButtonClickStopCycle(self):
+        os.sysytem("kill.cmd")#kills everything and 
         #self.entryNC.config(state='normal')
         #self.entryLT.config(state='normal')
         #self.entryHT.config(state='normal')
@@ -387,7 +391,7 @@ class HALTHASS(Tkinter.Tk):
         #self.radioCycle.config(state='normal')
         #self.radioManual.config(state='normal')
         #self.buttonStartCycle.config(state='normal')
-        self.buttonStopCycle.config(state='disable')     
+        #self.buttonStopCycle.config(state='disable')     
         #thread1.stop()
         #thread2.stop()                   
                                                 

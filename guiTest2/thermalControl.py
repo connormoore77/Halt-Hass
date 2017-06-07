@@ -66,15 +66,15 @@ class tenney(object):
 
         #begin thermal cycling
         for cycle in range(1,numberOfCycles+1):
-            directionUp = True
-            for i in range(1,3):
+            #directionUp = True
+            #for i in range(1,3):
                 for step in range(0, numberOfSteps+1):
-                    if(directionUp):
+                    #if(directionUp):
                         #print'Stepping up temperature'
-                        setTemperature = startTemperature + step*stepSize
-                    else:
+                    setTemperature = startTemperature + step*stepSize
+                    #else:
                         #print 'Stepping down temperature'
-                        setTemperature = stopTemperature - step*stepSize                    
+                        #setTemperature = stopTemperature - step*stepSize                    
                     currentTemperature = self.arduino.readTemperature()
                     print 'Adjusting Temperature to %r. Current temperature is %r.' %(setTemperature, currentTemperature)
                     self.setTemperature(setTemperature)
@@ -92,7 +92,8 @@ class tenney(object):
                         #print currentTemperature
                     print 'Set Temperature Reached'
                     self.waitInPlace(timeToWait)
-                directionUp = False        
+                #directionUp = False        
             print 'Cycle ' + str(cycle) + ' of ' + str(numberOfCycles) + ' is complete.'
         print 'Finished thermal cycling. Setting tmeperature to 23 degrees C.'
         self.setTemperature(23)
+        self.close()
