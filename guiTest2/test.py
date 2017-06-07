@@ -8,16 +8,14 @@ import logging,Queue
 import datetime
 import thermalControl 
 import vibrationControl
+import cyclingControl
 import os
 from sys import executable
 from subprocess import Popen, CREATE_NEW_CONSOLE
 
 
 #Notes
-#Add kill button and stop button
-#add a way to exit loops
 #add vacuum chuck status
-#add threaded moduals, changeFreq, changePressure, changeTemp, setGrms
 #add updating fields to gui
 #Add plotting 
 #Save data and plots
@@ -29,6 +27,12 @@ logging.basicConfig(level=logging.DEBUG,
                     format='(%(threadName)-10s) %(message)s',)
 
 class HALTHASS(Tkinter.Tk):
+    #If something is not right, kill everything.
+    #add checks for vacuum chuck, temperature out of range, grms out of range, etc.
+    if(1==2):
+        os.sysytem("kill.cmd")
+
+
     def __init__(self,parent):
         Tkinter.Tk.__init__(self,parent)
         self.parent = parent
@@ -349,6 +353,7 @@ class HALTHASS(Tkinter.Tk):
         self.entryT.config(state='disable')
         self.entryG.config(state='disable')
         self.buttonStartCycle.config(state='normal')
+        self.buttonStopCycle.config(state='normal')
         self.entryNC.config(state='normal')
         self.entryNC.config(state='normal')
         self.entryThermSS.config(state='normal')
@@ -362,27 +367,54 @@ class HALTHASS(Tkinter.Tk):
         self.entryVSL.config(state='normal')
         self.entryVSS.config(state='normal')
 
-
     #Start cycle button definition        
-    def OnButtonClickStartCycle(self):        
+    def OnButtonClickStartCycle(self):      
+        self.buttonStartCycle.config(state='disable')
+        self.entryNC.config(state='disable')
+        self.entryNC.config(state='disable')
+        self.entryThermSS.config(state='disable')
+        self.entryThermST.config(state='disable')
+        self.entryS.config(state='disable')
+        self.entryST.config(state='disable')
+        self.entryVF.config(state='disable')
+        self.entryVNC.config(state='disable')
+        self.entryVNS.config(state='disable')
+        self.entryVSG.config(state='disable')
+        self.entryVSL.config(state='disable')
+        self.entryVSS.config(state='disable')  
         #vib = vibrationControl.vibrationCycling('COM4','COM5')
-        oven = thermalControl.tenney('COM7','COM3')
+        #oven = thermalControl.tenney('COM7','COM3')
         #thread1 = threading.Thread(target=vib.vibrationCycling, args=[self.enterVibStepSize,self.enterVibStartGrms,self.enterVibStepLength,self.enterVibNumberOfSteps,self.enterVibFrequency])
         #thread1 = threading.Thread(target=vib.vibrationCycling, args=[5,3,2,1,2,5])
         #thread2 = threading.Thread(target=oven.cycle, args=[float(self.enterHighTemp.get()),float(self.enterLowTemp.get()),int(self.enterSteps.get()),int(self.enterSetTime.get()),int(self.enterNumCycles.get())])
         #thread2 = threading.Thread(target=oven.thermalCycling, args=[40,3,2,1,2])
-        oven = thermalControl.thermalCycling('COM7','COM3')
+        #oven = thermalControl.thermalCycling('COM7','COM3')
         #thread1 = threading.Thread(target=vib.grmsCycling, args=[int(self.enterVibStartGrms.get()),int(self.enterVibNumberOfSteps.get()),int(self.enterVibStepSize.get()),int(self.enterVibStepLength.get()),int(self.enterVibNumberOfCycles.get()),int(self.enterVibFrequency.get())])
-        thread2 = threading.Thread(target=oven.cycle, args=[float(self.enterStartTemperature.get()),float(self.enterSteps.get()),int(self.enterThermStepSize.get()),int(self.enterSetTime.get()),int(self.enterNumCycles.get())])
+        #thread2 = threading.Thread(target=oven.cycle, args=[float(self.enterStartTemperature.get()),float(self.enterSteps.get()),int(self.enterThermStepSize.get()),int(self.enterSetTime.get()),int(self.enterNumCycles.get())])
         #thread3 = threading.Thread(target=os.system('python Writing.py'))
         #thread1.start()
+        
+        #cycleObject = cyclingControl.cycleAll('COM4','COM5','COM7','COM3') 
+        #thread1 = threading.Thread(target=cycleObject.cycleAll, args=[int(self.enterVibStartGrms.get()),
+        #                int(self.enterVibNumberOfSteps.get()),int(self.enterVibStepSize.get()),
+        #                int(self.enterVibStepLength.get()),float(self.enterStartTemperature.get()),
+        #                float(self.enterSteps.get()),int(self.enterThermStepSize.get()),
+        #                int(self.enterNumCycles.get()),int(self.enterVibFrequency.get())])
+
+        #run cycling code in another shell
+        callString = 'startCycling('+str(self.enterVibStartGrms.get())+','
+                        +str(self.enterVibNumberOfSteps.get())+','+str(self.enterVibStepSize.get())+','
+                        +str(self.enterVibStepLength.get())+','+str(self.enterStartTemperature.get())+','
+                        +str(self.enterSteps.get())+','+str(self.enterThermStepSize.get())+','
+                        +str(self.enterNumCycles.get())+','+str(self.enterVibFrequency.get())+').py'
+        Popen([executable, callString], creationflags=CREATE_NEW_CONSOLE)
         Popen([executable, 'Writing.py'], creationflags=CREATE_NEW_CONSOLE)
-        thread2.start()
+        thread1.start()
         
 
     #Stop cycle button definition        
     def OnButtonClickStopCycle(self):
-        os.sysytem("kill.cmd")#kills everything and 
+        os.sysytem("kill.cmd")#kills everything
         #self.entryNC.config(state='normal')
         #self.entryLT.config(state='normal')
         #self.entryHT.config(state='normal')
@@ -392,8 +424,7 @@ class HALTHASS(Tkinter.Tk):
         #self.radioManual.config(state='normal')
         #self.buttonStartCycle.config(state='normal')
         #self.buttonStopCycle.config(state='disable')     
-        #thread1.stop()
-        #thread2.stop()                   
+
                                                 
                                                                                                 
 ########################main####################################################

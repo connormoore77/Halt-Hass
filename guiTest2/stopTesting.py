@@ -6,6 +6,7 @@ import vibrationControl
 import os
 #from sys import executable
 
+#make sure that the COMs listed here are correct before running.
 vib = vibrationControl.vibrationCycling('COM4','COM5')
 oven = thermalControl.tenney('COM7','COM3')
 

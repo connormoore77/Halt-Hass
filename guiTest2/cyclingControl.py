@@ -7,6 +7,7 @@ import Reading as read
 
 #need to check if everything works.
 #may need to delete everything that is found in thermalControl and vibrationControl
+#add check to see if we are at a safe temperature and a safe grms
 
 """
 class Cylinders(object):
@@ -98,7 +99,7 @@ class cycleAll(PropAir, Cylinders, tenney):
         PropAir.__init__(self, PAport, grmsArduinoPort=grmsPort)
         Cylinders.__init__(self, Cport)
         tenney.__init__(self, ardport)
-
+"""
     def setGrms(self, desiredGrms):
         #will need to be called in a loop with time.sleep()
         Shift1d = .005
@@ -151,6 +152,7 @@ class cycleAll(PropAir, Cylinders, tenney):
             currentTemperature = self.arduino.readTemperature()#temperature read from thermistor
             print 'Maintaining temperature. Current temperature is %r degrees C' % (currentTemperature) 
         time.sleep(1)
+"""
 
     def setTemperature(self,setTemperature):
         #self.setTemperature = setTemperature
