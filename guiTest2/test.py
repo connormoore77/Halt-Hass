@@ -364,17 +364,14 @@ class HALTHASS(Tkinter.Tk):
     #Start cycle button definition        
     def OnButtonClickStartCycle(self):        
         #vib = vibrationControl.vibrationCycling('COM4','COM5')
-<<<<<<< HEAD
         oven = thermalControl.tenney('COM7','COM3')
         #thread1 = threading.Thread(target=vib.vibrationCycling, args=[self.enterVibStepSize,self.enterVibStartGrms,self.enterVibStepLength,self.enterVibNumberOfSteps,self.enterVibFrequency])
         #thread1 = threading.Thread(target=vib.vibrationCycling, args=[5,3,2,1,2,5])
         #thread2 = threading.Thread(target=oven.cycle, args=[float(self.enterHighTemp.get()),float(self.enterLowTemp.get()),int(self.enterSteps.get()),int(self.enterSetTime.get()),int(self.enterNumCycles.get())])
         thread2 = threading.Thread(target=oven.thermalCycling, args=[40,3,2,1,2])
-=======
         oven = thermalControl.thermalCycling('COM7','COM3')
         #thread1 = threading.Thread(target=vib.grmsCycling, args=[int(self.enterVibStartGrms.get()),int(self.enterVibNumberOfSteps.get()),int(self.enterVibStepSize.get()),int(self.enterVibStepLength.get()),int(self.enterVibNumberOfCycles.get()),int(self.enterVibFrequency.get())])
         thread2 = threading.Thread(target=oven.cycle, args=[float(self.enterStartTemperature.get()),float(self.enterSteps.get()),int(self.enterThermStepSize.get()),int(self.enterSetTime.get()),int(self.enterNumCycles.get())])
->>>>>>> a5e377ad226b4338b4b33a276f09b0353ca791d5
         #thread3 = threading.Thread(target=os.system('python Writing.py'))
         #thread1.start()
         thread2.start()
