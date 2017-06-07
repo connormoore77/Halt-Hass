@@ -5,10 +5,10 @@ import time
 import minimalmodbus
 import Reading as read
 
-#need to merge loops and check that everything works.
+#need to check if everything works.
+#may need to delete everything that is found in thermalControl and vibrationControl
 
-rmsFile = "grmsLog.txt"
-
+"""
 class Cylinders(object):
     def __init__(self,Cport):
         self.arduino = serial.Serial(Cport,9600)
@@ -89,7 +89,9 @@ class tenney(object):
             print self.arduino.comm
             self.arduino.readTemperature()
         #self.close()
+"""
 
+rmsFile = "grmsLog.txt"
 
 class cycleAll(PropAir, Cylinders, tenney):
     def __init__(self, PAport, Cport, grmsPort='none'):
