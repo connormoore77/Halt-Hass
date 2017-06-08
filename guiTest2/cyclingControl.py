@@ -4,6 +4,7 @@ import decimal
 import time
 import minimalmodbus
 import Reading as read
+import thermalControl, vibrationControl
 
 #need to check if everything works.
 #may need to delete everything that is found in thermalControl and vibrationControl
@@ -90,16 +91,8 @@ class tenney(object):
             print self.arduino.comm
             self.arduino.readTemperature()
         #self.close()
-"""
 
-rmsFile = "grmsLog.txt"
 
-class cycleAll(PropAir, Cylinders, tenney):
-    def __init__(self, PAport, Cport, grmsPort='none'):
-        PropAir.__init__(self, PAport, grmsArduinoPort=grmsPort)
-        Cylinders.__init__(self, Cport)
-        tenney.__init__(self, ardport)
-"""
     def setGrms(self, desiredGrms):
         #will need to be called in a loop with time.sleep()
         Shift1d = .005
@@ -154,8 +147,16 @@ class cycleAll(PropAir, Cylinders, tenney):
         time.sleep(1)
 """
 
+
+rmsFile = "grmsLog.txt"
+
+class cycleAll(vibrationControl.PropAir,vibrationControl.Cylinders,thermalControl.tenney):
+    def __init__(self, PAport, Cport, grmsPort='none'):
+        PropAir.__init__(self, PAport, grmsArduinoPort=grmsPort)
+        Cylinders.__init__(self, Cport)
+        tenney.__init__(self, ardport)
+
     def setTemperature(self,setTemperature):
-        #self.setTemperature = setTemperature
         decimal.getcontext().prec = 1 #keeps values to 1 decimal place
         chamberInput = "= SP1 " + str(decimal.Decimal(setTemperature)) + "\n"
         try:
@@ -197,7 +198,7 @@ class cycleAll(PropAir, Cylinders, tenney):
                     self.setGrms(setGrms)
                     time.sleep(1)
                     currentGrms = read.readGrms(grmsLog)               
-                    while (abs(currentGrms - setGrms) > grmsAcceptance:                                
+                    while (abs(currentGrms - setGrms) > grmsAcceptance):                                
                         print 'Current grms is ' + currentGrms +'. Adjusting Setpoint to ' + str(setTemperature)
                         self.setGrms(setGrms)                            
                         time.sleep(1)

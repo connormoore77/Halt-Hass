@@ -149,7 +149,7 @@ class vibrationCycling(PropAir, Cylinders):
                             self.setGrms(setGrms)
                         time.sleep(1)  
                 #directionUp = False                             
-            print 'Cycle ' + str(i) + ' of ' + str(cycle) + ' is complete.'
+                print 'Cycle ' + str(i) + ' of ' + str(cycle) + ' is complete.'
         print 'Finished vibration cycling. Setting Pressure 0 Psi.'
         self.setPressure(0)
         self.close()

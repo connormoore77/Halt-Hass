@@ -93,7 +93,7 @@ class tenney(object):
                     print 'Set Temperature Reached'
                     self.waitInPlace(timeToWait)
                 #directionUp = False        
-            print 'Cycle ' + str(cycle) + ' of ' + str(numberOfCycles) + ' is complete.'
+                print 'Cycle ' + str(cycle) + ' of ' + str(numberOfCycles) + ' is complete.'
         print 'Finished thermal cycling. Setting tmeperature to 23 degrees C.'
         self.setTemperature(23)
         self.close()
