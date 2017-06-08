@@ -1,6 +1,6 @@
 import os,time
 
-def getGrms(filename):
+def readGrms(filename):
 	while 1:
 		try:
 			f = open(filename, 'r')

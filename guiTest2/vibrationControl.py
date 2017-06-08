@@ -18,7 +18,7 @@ class Cylinders(object):
         time.sleep(1)
         self.arduino.flush()
         self.arduino.write(str(deltaT))
-        print 'Frequency Set.'
+        #print 'Frequency Set.'
         
     def close(self):
         self.arduino.close()
@@ -38,6 +38,7 @@ class PropAir(object):
     def setPressure(self,pressure):
         val = pressure*655 #pressure is scaled by a fixed value to map to presure regulator
         self.ins.write_register(49,val)
+        #print 'Pressure Set.'
                         
     def readPressure(self):
         return self.ins.read_register(49)/655
@@ -62,7 +63,7 @@ class vibrationCycling(PropAir, Cylinders):
         PropAir.__init__(self, PAport, grmsArduinoPort=grmsPort)
         Cylinders.__init__(self, Cport)
         
-    def setGrms(self, desiredGrms):
+    def setGrms(self, currentGrms, desiredGrms):
         #will need to be called in a loop with time.sleep()
         Shift1d = .005
         Shift2d = .02
@@ -113,7 +114,7 @@ class vibrationCycling(PropAir, Cylinders):
         if round(numberOfCycles,1) != round(numberOfCycles,0)+0.0:
             raise RuntimeError('Use only integer values for Number of Cycles.') 
         #startTime = time.time()
-        self.setFreq(frequency)
+        self.setFrequency(frequency)
         self.setPressure(1)#have the pressure start low
         grmsAcceptance = .2        
         timeToWait = timeToWaitInPlace*60 #convert to minutes
@@ -131,12 +132,12 @@ class vibrationCycling(PropAir, Cylinders):
                         #print 'Stepping down Grms'
                         #setGrms = stopGrms - step*stepSize
                     print 'Adjusting Grms to ' + str(setGrms)
-                    self.setGrms(setGrms)
+                    self.setGrms(currentGrms, setGrms)
                     time.sleep(1)
                     currentGrms = read.readGrms(grmsLog)               
                     while (abs(currentGrms - setGrms) > grmsAcceptance):                    
                         print 'Current grms is ' + currentGrms +'. Adjusting Setpoint to ' + str(setTemperature)
-                        self.setGrms(setGrms)
+                        self.setGrms(currentGrms, setGrms)
                         currentGrms = read.readGrms(grmsLog)             
                         time.sleep(1)
                     print 'Set Grms Reached'
@@ -146,7 +147,7 @@ class vibrationCycling(PropAir, Cylinders):
                         currentGrms = read.readGrms(grmsLog)
                         print 'Current grms is ' + currentGrms + '.' 
                         if(abs(currentGrms - setGrms) > grmsAcceptance):#keep calling to maintian grms
-                            self.setGrms(setGrms)
+                            self.setGrms(currentGrms, setGrms)
                         time.sleep(1)  
                 #directionUp = False                             
                 print 'Cycle ' + str(i) + ' of ' + str(cycle) + ' is complete.'

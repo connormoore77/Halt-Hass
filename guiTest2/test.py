@@ -323,27 +323,18 @@ class HALTHASS(Tkinter.Tk):
         #thread2 = threading.Thread(target=oven.cycle, args=[float(self.enterStartTemperature.get()),float(self.enterSteps.get()),int(self.enterThermStepSize.get()),int(self.enterSetTime.get()),int(self.enterNumCycles.get())])
         #thread3 = threading.Thread(target=os.system('python Writing.py'))
         #thread1.start()
-        
-        #cycleObject = cyclingControl.cycleAll('COM4','COM5','COM7','COM3') 
+        Popen([executable, 'Writing.py'], creationflags=CREATE_NEW_CONSOLE)
+        cycleObject = cyclingControl.cycleAll('COM4','COM5','COM7','COM3') 
         #thread1 = threading.Thread(target=cycleObject.cycleAll, args=[int(self.enterVibStartGrms.get()),\
         #                int(self.enterVibNumberOfSteps.get()),int(self.enterVibStepSize.get()),\
         #                int(self.enterVibStepLength.get()),float(self.enterStartTemperature.get()),\
         #                float(self.enterSteps.get()),int(self.enterThermStepSize.get()),\
         #                int(self.enterNumCycles.get()),int(self.enterVibFrequency.get())])
 
-        #thread1.start()
+        thread1 = threading.Thread(target=cycleObject.grmsCycling, args=[5,3,3,1,21,3,10,2,2])
+        thread1.start()
 
-        #run cycling code in another shell
-        callString = 'startCycling('+str(self.enterVibStartGrms.get())+','\
-                        +str(self.enterVibNumberOfSteps.get())+','+str(self.enterVibStepSize.get())+','\
-                        +str(self.enterVibStepLength.get())+','+str(self.enterStartTemperature.get())+','\
-                        +str(self.enterSteps.get())+','+str(self.enterThermStepSize.get())+','\
-                        +str(self.enterNumCycles.get())+','+str(self.enterVibFrequency.get())+').py'
-        try:
-            Popen([executable, callString], creationflags=CREATE_NEW_CONSOLE)
-            #Popen([executable, 'Writing.py'], creationflags=CREATE_NEW_CONSOLE)
-        except:
-            print 'ERROR: Unable to start cycling.'                                         
+                     
                                                                                                 
 ########################    MAIN    ####################################################
 if __name__ == "__main__":
