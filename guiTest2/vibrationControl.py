@@ -76,7 +76,7 @@ class vibrationCycling(PropAir, Cylinders):
         mediumDifference = .5
         largeDifference = 1        
 
-        grmsDifference = currentGrms - desiredGrms                                               
+        grmsDifference = desiredGrms - currentGrms                                             
         if(grmsDifference > largeDifference):#large positive difference           
             pressure = pressure + Shift3d
             if pressure > 80:
@@ -115,7 +115,7 @@ class vibrationCycling(PropAir, Cylinders):
             raise RuntimeError('Use only integer values for Number of Cycles.') 
         #startTime = time.time()
         self.setFrequency(frequency)
-        self.setPressure(1)#have the pressure start low
+        self.setPressure(10)#have the pressure start low
         grmsAcceptance = .2        
         timeToWait = timeToWaitInPlace*60 #convert to minutes
         stopGrms = startGrms + stepSize*numberOfSteps
@@ -136,7 +136,7 @@ class vibrationCycling(PropAir, Cylinders):
                     time.sleep(1)
                     currentGrms = read.readGrms(grmsLog)               
                     while (abs(currentGrms - setGrms) > grmsAcceptance):                    
-                        print 'Current grms is ' + currentGrms +'. Adjusting Setpoint to ' + str(setTemperature)
+                        print 'Current grms is ' + currentGrms +'. Adjusting Setpoint to ' + str(setGrms)
                         self.setGrms(currentGrms, setGrms)
                         currentGrms = read.readGrms(grmsLog)             
                         time.sleep(1)
