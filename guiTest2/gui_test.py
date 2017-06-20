@@ -7,7 +7,7 @@ import threading,Queue
 import logging
 import datetime
 import tenney
-import vibration
+import Vibration
 import os
 #import Writing
 
@@ -386,13 +386,13 @@ class HALTHASS(Tkinter.Tk):
         self.radioManual.config(state='disable')
         self.buttonStopCycle.config(state='normal')
         self.buttonStartCycle.config(state='disable')
-        #vib = vibration.VibrationCycling('COM4','COM5')
-        oven = tenney.Tenney('COM7','COM3')
-        #thread1 = threading.Thread(target=vib.cycle, args=[self.enterVibStepSize,self.enterVibStartGrms,self.enterVibStepLength,self.enterVibNumberOfSteps,self.enterVibFrequency])
-        thread2 = threading.Thread(target=oven.cycle, args=[float(self.enterHighTemp.get()),float(self.enterLowTemp.get()),int(self.enterSteps.get()),int(self.enterSetTime.get()),int(self.enterNumCycles.get())])
+        vib = Vibration.VibrationCycling('COM4','COM5')
+        #oven = tenney.Tenney('COM7','COM3')
+        thread1 = threading.Thread(target=vib.grmsCycling, args=[int(self.enterVibStepSize),int(self.enterVibStartGrms),int(self.enterVibStepLength),int(self.enterVibNumberOfSteps),int(self.enterVibFrequency)])
+        #thread2 = threading.Thread(target=oven.cycle, args=[float(self.enterHighTemp.get()),float(self.enterLowTemp.get()),int(self.enterSteps.get()),int(self.enterSetTime.get()),int(self.enterNumCycles.get())])
         #thread3 = threading.Thread(target=os.system('python Writing.py'))
-        #thread1.start()
-        thread2.start()
+        thread1.start()
+        #thread2.start()
         #thread3.start()
 
     #Stop cycle button definition        

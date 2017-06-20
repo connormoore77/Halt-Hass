@@ -6,7 +6,7 @@ import time
 import threading
 #import logging,Queue
 import datetime
-import thermalControl 
+import thermalControl
 import vibrationControl
 import cyclingControl
 import os
@@ -178,7 +178,7 @@ class HALTHASS(Tkinter.Tk):
         self.labelVibStepSize = Tkinter.StringVar()
         label = Tkinter.Label(self,textvariable=self.labelVibStepSize,anchor="w",fg="white",bg="blue")
         label.grid(column=1,row=22,columnspan=2,sticky='EW')
-        self.labelVibStepSize.set(u"Enter Step Size (C)")
+        self.labelVibStepSize.set(u"Enter Step Size (Psi)")
         #set time to wait
         self.enterVibStepLength = Tkinter.StringVar()
         self.entryVSL = Tkinter.Entry(self,textvariable=self.enterVibStepLength,state='disable')
@@ -227,7 +227,7 @@ class HALTHASS(Tkinter.Tk):
         self.entryF.selection_range(0, Tkinter.END)
         try:
             vib = vibrationControl.vibrationCycling('COM4','COM5')
-            vib.setFrequency(int(self.enterFrequency.get()))
+            vib.setFrequency(float(self.enterFrequency.get()))
         except:
             print 'ERROR: Unable to set frequency.'
     #Update Pressure button definition
@@ -237,7 +237,7 @@ class HALTHASS(Tkinter.Tk):
         self.entryP.selection_range(0, Tkinter.END)
         try:
             vib = vibrationControl.vibrationCycling('COM4','COM5')
-            vib.setPressure(int(self.enterPressure.get()))
+            vib.setPressure(float(self.enterPressure.get()))
         except:
             print 'ERROR: Unable to set pressure.'
     #Update temperature button definition        
@@ -313,16 +313,11 @@ class HALTHASS(Tkinter.Tk):
         self.entryVSL.config(state='disable')
         self.entryVSS.config(state='disable')  
         #vib = vibrationControl.vibrationCycling('COM4','COM5')
-        #oven = thermalControl.tenney('COM7','COM3')
-        #thread1 = threading.Thread(target=vib.vibrationCycling, args=[self.enterVibStepSize,self.enterVibStartGrms,self.enterVibStepLength,self.enterVibNumberOfSteps,self.enterVibFrequency])
-        #thread1 = threading.Thread(target=vib.vibrationCycling, args=[5,3,2,1,2,5])
-        #thread2 = threading.Thread(target=oven.cycle, args=[float(self.enterHighTemp.get()),float(self.enterLowTemp.get()),int(self.enterSteps.get()),int(self.enterSetTime.get()),int(self.enterNumCycles.get())])
-        #thread2 = threading.Thread(target=oven.thermalCycling, args=[40,3,2,1,2])
+        #thread = threading.Thread(target=vib.grmsCycling, args=[10,5,10,2,2,7])
+        #thread = threading.Thread(target=oven.thermalCycling, args=[40,3,2,1,2])
         #oven = thermalControl.thermalCycling('COM7','COM3')
-        #thread1 = threading.Thread(target=vib.grmsCycling, args=[int(self.enterVibStartGrms.get()),int(self.enterVibNumberOfSteps.get()),int(self.enterVibStepSize.get()),int(self.enterVibStepLength.get()),int(self.enterVibNumberOfCycles.get()),int(self.enterVibFrequency.get())])
-        #thread2 = threading.Thread(target=oven.cycle, args=[float(self.enterStartTemperature.get()),float(self.enterSteps.get()),int(self.enterThermStepSize.get()),int(self.enterSetTime.get()),int(self.enterNumCycles.get())])
-        #thread3 = threading.Thread(target=os.system('python Writing.py'))
-        #thread1.start()
+        #thread = threading.Thread(target=vib.grmsCycling, args=[int(self.enterVibStartGrms.get()),int(self.enterVibNumberOfSteps.get()),int(self.enterVibStepSize.get()),int(self.enterVibStepLength.get()),int(self.enterVibNumberOfCycles.get()),int(self.enterVibFrequency.get())])
+        #thread = threading.Thread(target=oven.cycle, args=[float(self.enterStartTemperature.get()),float(self.enterSteps.get()),int(self.enterThermStepSize.get()),int(self.enterSetTime.get()),int(self.enterNumCycles.get())])
         Popen([executable, 'Writing.py'], creationflags=CREATE_NEW_CONSOLE)
         cycleObject = cyclingControl.cycleAll('COM4','COM5','COM7','COM3') 
         #thread1 = threading.Thread(target=cycleObject.cycleAll, args=[int(self.enterVibStartGrms.get()),\
@@ -330,9 +325,8 @@ class HALTHASS(Tkinter.Tk):
         #                int(self.enterVibStepLength.get()),float(self.enterStartTemperature.get()),\
         #                float(self.enterSteps.get()),int(self.enterThermStepSize.get()),\
         #                int(self.enterNumCycles.get()),int(self.enterVibFrequency.get())])
-
-        thread1 = threading.Thread(target=cycleObject.grmsCycling, args=[5,3,3,1,21,3,10,2,2])
-        thread1.start()
+        thread = threading.Thread(target=cycleObject.grmsCycling, args=[10,6,5,10,21,2,2,1,3])
+        thread.start()
 
                      
                                                                                                 
