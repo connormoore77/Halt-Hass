@@ -1,6 +1,7 @@
 import numpy as np
 import serial,glob,math
 import time,threading,sys,os,fnmatch,shutil
+import ROOT
 
 print ""
 portDUE=raw_input("Port of DUE ? (COM##)   : ")

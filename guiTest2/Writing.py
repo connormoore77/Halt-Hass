@@ -5,7 +5,7 @@ import time,threading,sys,os,fnmatch,shutil
 print ""
 portDUE=raw_input("Port of DUE ? (COM##)   : ")
 ArduinoRead = serial.Serial(portDUE,9600)
-t_log = 10
+t_log = 1800
 filename = "grmsLog.txt"
 t_start = time.time()
 localDATE = time.strftime('%y%m%d'  ,time.localtime(t_start))

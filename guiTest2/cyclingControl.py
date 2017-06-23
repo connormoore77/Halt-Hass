@@ -40,21 +40,47 @@ class PropAir(object):
     def readPressure(self):
         return self.ins.read_register(49)/655
 
+    #def guessPressure(self,targetGrms):
+        #the equation below was determined by fitting grms vs pressure.
+        #returns approximate required pressure to get a target grms
+        #return .0002*targetGrms*targetGrms*targetGrms*targetGrms - .0084*targetGrms*targetGrms*targetGrms + .1839*targetGrms*targetGrms  - 1.0125*targetGrms + 9.7998
+        #return .0005*targetGrms**4-.0252*targetGrms**3+.4538*targetGrms**2-2.5732*targetGrms+12.62
+        #return .0004*targetGrms**4-.0293*targetGrms**3+.7402*targetGrms**2-6.3215*targetGrms+24.129#three hammers test 1
+        #return .00002*targetGrms**4-.0016*targetGrms**3+.0527*targetGrms**2+0.109*targetGrms+7.4121#three hammers test 2
+        #return -.0002*targetGrms**4+.0085*targetGrms**3-.1106*targetGrms**2+1.069*targetGrms+6.366#three hammers test 3
+        
+
     def setGrms(self, currentGrms, desiredGrms):
         #will need to be called in a loop with time.sleep()
         Shift1d = .005
         Shift2d = .02
         Shift3d = .04
+        Shift4d = .1
+        Shift5d = .2
         Shift1u = .006
         Shift2u = .023
         Shift3u =  .05
+        Shift4u =  .1
+        Shift5u =  .2
 
         smallDifference = .2
         mediumDifference = .5
         largeDifference = 1.0
 
         grmsDifference = desiredGrms - currentGrms
-        if grmsDifference > largeDifference:#large positive difference   
+        if grmsDifference > 3 and desiredGrms > 10:   
+            print '-1'
+            self.pressure = self.pressure + Shift5d
+            if self.pressure > 80:
+                self.pressure = 80
+            self.setPressure(self.pressure)
+        elif grmsDifference > 2 and desiredGrms > 10:   
+            print '0'
+            self.pressure = self.pressure + Shift4d
+            if self.pressure > 80:
+                self.pressure = 80
+            self.setPressure(self.pressure)
+        elif grmsDifference > largeDifference:#large positive difference   
             print '1'
             self.pressure = self.pressure + Shift3d
             if self.pressure > 80:
@@ -72,6 +98,17 @@ class PropAir(object):
             if self.pressure > 80:
                 self.pressure = 80
             self.setPressure(self.pressure)         
+        elif grmsDifference < -1*3:
+            self.pressure = self.pressure - Shift5u
+            if self.pressure < 1:
+                self.pressure = 1
+            self.setPressure(self.pressure)
+        elif grmsDifference < -1*2:
+            print '7'
+            self.pressure = self.pressure - Shift4u
+            if self.pressure < 1:
+                self.pressure = 1
+            self.setPressure(self.pressure)
         elif grmsDifference < -1*largeDifference:#large negative difference 
             print '6'
             self.pressure = self.pressure - Shift3u
@@ -90,7 +127,7 @@ class PropAir(object):
             if self.pressure < 1:
                 self.pressure = 1.0
             self.setPressure(self.pressure)
-        print 'function pressure is ' +str(self.pressure)
+        #print 'function pressure is ' +str(self.pressure) +'. Current Grms is ' + str(currentGrms)
                 
 class tenney(object):
     #initialize class to control thermal chamber
@@ -156,13 +193,14 @@ class cycleAll(PropAir, Cylinders, tenney):
             raise RuntimeError('Use only integer values for Number of Cycles.')
         #startTime = time.time()
         self.setFrequency(frequency)
-        self.pressure = 8.0
-        self.setPressure(self.pressure)#have the pressure start low
-        grmsAcceptance = 0.5
-        temperatureAcceptance = 5.0
+        self.pressure = 5.0
+        #self.pressure = guessPressure(startGrms)#sets pressure to pressure given approximate equation
+        self.setPressure(self.pressure)#start at a low pressure while temperatuer is adjusting
+        grmsAcceptance = .2
+        temperatureAcceptance = 50
         timeToWait = timeToWaitAtGrmsStep*60 #convert to minutes
-        stopGrms = startGrms + grmsStepSize*numberOfGrmsSteps
-        stopTemperature = startTemperature + temperatureStepSize*numberOfTemperatureSteps
+        #stopGrms = startGrms + grmsStepSize*numberOfGrmsSteps#can be used to make the program cycle in revearse.
+        #stopTemperature = startTemperature + temperatureStepSize*numberOfTemperatureSteps
         #begin cycling
         for cycle in range(1, numberOfCycles+1):
             for tempStep in range(0, numberOfTemperatureSteps+1):
@@ -180,23 +218,37 @@ class cycleAll(PropAir, Cylinders, tenney):
                 for grmsStep in range(0, numberOfGrmsSteps+1):
                     setGrms = startGrms + grmsStep*grmsStepSize
                     #setGrms = stopGrms - grmsStep*grmsStepSize
-                    currentGrms = read.readGrms(grmsLog)
                     print 'Adjusting Grms to ' + str(setGrms)
-                    self.setGrms(currentGrms, setGrms)
-                    time.sleep(2)
-                    while abs(currentGrms - setGrms) > grmsAcceptance:
-                        currentGrms = read.readGrms(grmsLog)
-                        print 'Current grms is ' + str(currentGrms) +'. Adjusting Setpoint to ' + str(setGrms)
-                        print 'Current Pressure is ' +str(self.pressure)
+                    #self.pressure = self.guessPressure(setGrms)#sets pressure to pressure given approximate equation
+                    #self.setPressure(self.pressure)
+                    #time.sleep(2)
+                    currentGrms = read.readGrms(grmsLog)
+                    twice = False
+                    while abs(currentGrms - setGrms) > grmsAcceptance or not twice:
+                        print str(twice)
+                        print 'Current grms is ' + str(currentGrms) +' Adjusting Setpoint to ' + str(setGrms)
+                        print 'Current Pressure is ' +str(self.pressure) + ' Current temperature is ' + str(self.arduino.readTemperature())
                         self.setGrms(currentGrms, setGrms)
+                        if abs(currentTemperature - setTemperature) > temperatureAcceptance:
+                            print 'Adjusting Temperature to ' + str(setTemperature) + '. Currently ' + str(currentTemperature)
+                            self.setTemperature(setTemperature)
+                            currentTemperature = self.arduino.readTemperature()
+                            if currentTemperature < -272:
+                                self.theramlChamberError()
+                        if abs(currentGrms - setGrms) < grmsAcceptance + .2:
+                            twice = True
+                        else:
+                            twice = False
                         time.sleep(2)
+                        currentGrms = read.readGrms(grmsLog)
                     print 'Set Grms Reached'
                     timeToEnd = time.time() + timeToWait
                     #Keep grms at certain level
                     while time.time() < timeToEnd:
                         currentGrms = read.readGrms(grmsLog)
-                        print 'Current grms is ' + str(currentGrms) + '. Current temperature is ' + str(self.arduino.readTemperature()) + '.'
-                        if abs(currentGrms - setGrms) > grmsAcceptance:#keep calling to maintian grms
+                        print 'Current grms is ' + str(currentGrms)
+                        print 'Current Pressure is ' +str(self.pressure) + ' Current temperature is ' + str(self.arduino.readTemperature())
+                        if abs(currentGrms - setGrms) > grmsAcceptance + .1:#keep calling to maintian grms
                             self.setGrms(currentGrms, setGrms)
                         if abs(currentTemperature - setTemperature) > temperatureAcceptance:
                             print 'Adjusting Temperature to ' + str(setTemperature) + '. Currently ' + str(currentTemperature)
@@ -206,11 +258,11 @@ class cycleAll(PropAir, Cylinders, tenney):
                                 self.theramlChamberError()
                         time.sleep(2)
                 print 'Finished grms step ' + str(grmsStep) + ' out of ' + str(numberOfGrmsSteps) + '.'
-            print 'Cycle ' + str(i) + ' of ' + str(cycle) + ' is complete.'
+            print 'Cycle ' + str(cycle) + ' of ' + str(cycle) + ' is complete.'
         print 'Finished cycling. Setting Pressure 0 Psi.'
         self.setPressure(0)
         print 'Setting frequency to 1 Hz.'
-        self.setFreq(1)
+        self.setFrequency(1)
         print 'Setting temperature to 20 degrees C.'
         self.setTemperature(20)
         self.close()
