@@ -320,13 +320,10 @@ class HALTHASS(Tkinter.Tk):
         #thread = threading.Thread(target=oven.cycle, args=[float(self.enterStartTemperature.get()),float(self.enterSteps.get()),int(self.enterThermStepSize.get()),int(self.enterSetTime.get()),int(self.enterNumCycles.get())])
         Popen([executable, 'Writing.py'], creationflags=CREATE_NEW_CONSOLE)
         cycleObject = cyclingControl.cycleAll('COM4','COM5','COM7','COM3') 
-        #thread1 = threading.Thread(target=cycleObject.cycleAll, args=[int(self.enterVibStartGrms.get()),\
-        #                int(self.enterVibNumberOfSteps.get()),int(self.enterVibStepSize.get()),\
-        #                int(self.enterVibStepLength.get()),float(self.enterStartTemperature.get()),\
-        #                float(self.enterSteps.get()),int(self.enterThermStepSize.get()),\
-        #                int(self.enterNumCycles.get()),int(self.enterVibFrequency.get())])
         #thread = threading.Thread(target=cycleObject.grmsCycling, args=[5,1,25,1,21,0,1,1,2])
-        thread = threading.Thread(target=cycleObject.grmsCycling, args=[5,6,5,60,21,0,1,1,2])
+        #startGrms, numberOfGrmsSteps, grmsStepSize, timeToWaitAtGrmsStep, 
+        #startTemperature, numberOfTemperatureSteps, temperatureStepSize, numberOfCycles, frequency
+        thread = threading.Thread(target=cycleObject.grmsCycling, args=[25,0,5,30,-40,18,5,1,2])
 
         thread.start()
 

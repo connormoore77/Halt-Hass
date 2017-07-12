@@ -1,47 +1,67 @@
+"""
+2017.06.25hylee
+Try to change Averaging Time from 1[s]to1.5 or 2[s]
+2017.06.20hylee
+Try to add the real-time plotting with pyqtgraph to the current HALTHASS/Writing.py
+Based on the previous codes "1115_pyqt_DAQ_working.py",
+create csv files as well
+"""
+
+
 import numpy as np
 import serial,glob,math
 import time,threading,sys,os,fnmatch,shutil
+#import pyqtgraph as pg
+#import pyqtgraph.exporters
+t_avg = 2.0
+t_log = 900 #acual t_logging/2
+filename = "gfile.txt"
 
-print ""
-#portDUE=raw_input("Port of DUE ? (COM##)   : ")
-#ArduinoRead = serial.Serial(portDUE,9600)
-ArduinoRead = serial.Serial('COM6',9600)
-t_log = 1800
-filename = "grmsLog.txt"
 t_start = time.time()
 localDATE = time.strftime('%y%m%d'  ,time.localtime(t_start))
-localTIME = time.strftime('%Hh_%Mm_%Ss',time.localtime(t_start))
-fgrmsName = localDATE+'_grms_'+'start_at_'+ localTIME+'.csv'
-fgrmsComponentsName = localDATE+'_grmsComponents_'+'start_at_'+ localTIME+'.csv'
+localTIME = time.strftime('%H%M',time.localtime(t_start))
+local = localDATE+'_'+localTIME+'_'
+fgrmsName = local+'Grms.csv'
+fgrmsComponentsName = local+'Comp.csv'
 
-def facc_Write(y,t):
-	localDATE = time.strftime('%y%m%d'  ,time.localtime(t))
-	localTIME = time.strftime('%Hh_%Mm_%Ss',time.localtime(t))
-	faccName = localDATE+'_acc_'+localTIME+'.csv'
+#portDUE=raw_input("Port of DUE ? (COM##)   : ")
+#portDUE="COM16"
+#ArduinoRead = serial.Serial(portDUE,9600)
+
+
+def facc_Write(y,local,lapse):
+	#localDATE = time.strftime('%y%m%d'  ,time.localtime(t))
+	#localTIME = time.strftime('%Hh_%Mm_%Ss',time.localtime(t))
+	faccName = local+'Amps_%ds.csv'%lapse
 	facc = open(faccName,'w')
 	for i in range(0,len(y)):
 		facc.write(str(0.00002*i)+','+','.join(map(str,y[i]))+' \n')
 		#print i
 	facc.close()
+
 def fgrms_Write(fgrmsName,y,t0,t):
 	str_t  = str(int(t-t0))
 	str_g  = str(round(y,1))
 	fgrms = open(fgrmsName,'a')
         fgrms.write(str_t+','+str_g+'\n');fgrms.close()
+
 def fgrmsComponents_Write(fgrmsComponentsName,y,t0,t):
 	n=len(y);str_t   = str(int(t-t0))
 	fgrms = open(fgrmsComponentsName,'a')
 	print str(y[n-1])+'    ('+str(y[0])+','+str(y[1])+','+str(y[2])+')'
 	fgrms.write(str_t+','+','.join(map(str,y))+' \n')
 	fgrms.close()
+
 def fWrite(filename,y):
 	try :f = open(filename, 'w');f.flush();f.write(y+'\n');f.close()
 	except:print ''
+
 def rms(y):
         sum_squares = 0
         for i in range(0,len(y)):
                 sum_squares = sum_squares+y[i]*y[i]
         return math.sqrt(sum_squares/float(len(y)))
+
 def findArduino(boardName,exclude):
 	a = raw_input('Connect %s and press Enter'%boardName)
 	if a is not None:
@@ -53,13 +73,14 @@ def findArduino(boardName,exclude):
 	print '%s = %s'%(boardName,address);print info
 	return info,address
 sps      = 50
-dt       = 0.00002 
-ymax     = 100
-t_avg    = 1.0
-M        = int(round(t_avg/dt))	           
-N        = 50			   
-n	 = 1
 ch       = 6
+dt       = 0.00002 
+#ymax = input('ymax: ')
+#t_avg    = 1.0
+M        = int(round(t_avg/dt))	           
+t_range  = t_avg
+n	 = int(t_range/t_avg)
+N        = int(n*50)
 toG      = 2.7365 		  
 t_data   = [i*dt for i in range(0,M) ]
 class SerialReader(threading.Thread):
@@ -160,14 +181,90 @@ class Csvfiles(threading.Thread):
 				
 			else:
 				if mainTH.count%(M*t_log)==0:
-					print "------------------------------------[CSV file out]  %d [sec]"%(mainTH.count/M)
+					lapse=2*mainTH.count/M
+					print "------------------------------------[CSV file out]  %d [sec]"%lapse
 					data,rms,t_now=mainTH.get(M,n)
-					facc_Write(data,t_now)
+					facc_Write(data,local,lapse)
 					time.sleep(1)
 			i=i+1
-#ArduinoRead, address_read=findArduino('Arduino_read','0')
+########################################################################################
+
+#pc=input("PC[0] netbook[1] : ")
+pc=0
+if pc==0:
+	#portDUE=raw_input("Port of DUE ? (COM##)   : ")
+	portDUE="COM6"
+	ArduinoRead = serial.Serial(portDUE,9600)
+else:
+	ArduinoRead, address_read=findArduino('Arduino_read','0')
+
+########################################################################################
+#app	= pg.mkQApp()
+#win	= pg.GraphicsWindow(title='Start at %s' %local)
+#win.resize(1000,400)
+#lr	= pg.LinearRegionItem([0.01,0.05])
+#lr.setZValue(-10)
+
+#-----------------------------------plot1
+#plt1	= win.addPlot()
+#plt1.setLabels(left=('Amplitude','g'),bottom=('Time','s'))
+#plt1.setYRange(-ymax,ymax)
+#plt1.setXRange(0,t_range/1.0)
+#plt1.showGrid(x=True,y=True)
+#plt1.addLegend()
+#A0	= plt1.plot(pen=(  0,  0,255))
+#A1	= plt1.plot(pen=(  0,255,  0))
+#A2	= plt1.plot(pen=(255,  0,  0))
+#A3	= plt1.plot(pen=(  0,255,255))
+#A4	= plt1.plot(pen=(255,255,  0))
+#A5	= plt1.plot(pen=(255,127,  0))
+#usepyqtExp=input("Datalogging with pyqtExporter?yes[1]no[0]  :   ")
+#if usepyqtExp==1:exporter=pg.exporters.CSVExporter(plt1)
+
+
+
+
+
+########################################################################################
+
+
+
+
 thread = SerialReader(ArduinoRead,M,N,ch,toG)
 thread.start()
 thread2 = Csvfiles(thread)
 thread2.start()
+
 #######################################################################################
+"""
+def update():
+	#global ArduinoRead,thread,lr
+	global ArduinoRead,thread
+	global plt1,A0,A1,A2
+	#global plt2,G0,G1,G2
+	
+	data,rms,t_now = thread.get(M,n)
+	#plt1.setTitle('Grms=%0.1f'%rms[2]
+	A0.setData(t_data,data[:,0])
+	A1.setData(t_data,data[:,1])
+	A2.setData(t_data,data[:,2])
+	
+	if not plt1.isVisible():
+		thread.exit()
+		timer.stop()
+		ArduinoRead.close()
+		ArduinoRead.delete()
+
+#######################################################################################
+timer=pg.QtCore.QTimer()
+timer.timeout.connect(update)
+
+#######################################################################################
+timer.start(0)
+if sys.flags.interactive==0:app.exec_()
+"""
+
+
+
+
+
